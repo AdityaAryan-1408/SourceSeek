@@ -6,16 +6,16 @@ import { authenticateToken } from "../middleware/authMiddleware"
 
 const router = Router();
 
-// --- Standard Email/Password Auth ---
+
 router.post("/register", register);
 router.post("/login", login);
 
 router.get("/me", authenticateToken, getMe);
 
-// --- GitHub OAuth ---
 
 
-// 1. Initiate
+
+
 router.get(
     "/github",
     (req, res, next) => {
@@ -25,7 +25,7 @@ router.get(
     passport.authenticate("github", { scope: ["user:email"] })
 );
 
-// 2. Callback
+
 router.get(
     "/github/callback",
     (req, res, next) => {
@@ -35,7 +35,6 @@ router.get(
     (req, res) => {
         console.log("[AuthRoutes] Authentication successful. Generating Token...");
 
-        // If we are here, the user is successfully authenticated
         const user = req.user as any;
 
         if (!user) {

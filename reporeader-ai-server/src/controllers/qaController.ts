@@ -11,7 +11,6 @@ export const chatWithRepo = async (req: Request, res: Response): Promise<any> =>
     }
 
     try {
-        // 1. Verify Repo exists
         const repo = await prisma.repository.findUnique({
             where: { id: repoId }
         });
@@ -20,16 +19,11 @@ export const chatWithRepo = async (req: Request, res: Response): Promise<any> =>
             return res.status(404).json({ error: "Repository not found" });
         }
 
-        // 2. Call the AI Service
         const aiResponse = await generateAnswer(question, repoId);
 
-        // 3. SANITIZATION FIX: Normalize the path to match React Flow IDs
-        // The graph uses "src/index.ts" (forward slashes, no leading slash)
         if (aiResponse.targetNode) {
-            // Replace backslashes with forward slashes
             let normalized = aiResponse.targetNode.replace(/\\/g, '/');
 
-            // Remove leading slash if present (e.g. "/src/file.ts" -> "src/file.ts")
             if (normalized.startsWith('/')) {
                 normalized = normalized.substring(1);
             }
@@ -38,7 +32,6 @@ export const chatWithRepo = async (req: Request, res: Response): Promise<any> =>
             aiResponse.targetNode = normalized;
         }
 
-        // 4. Return the response
         return res.json(aiResponse);
 
     } catch (error) {

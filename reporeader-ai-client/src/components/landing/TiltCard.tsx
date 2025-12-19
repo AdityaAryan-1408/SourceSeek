@@ -48,7 +48,7 @@ export const TiltCard = ({ title, description, icon: Icon, delay }: TiltCardProp
             transition={{ duration: 0.6, delay: delay * 0.1 }}
             className="relative h-64 w-full rounded-2xl bg-slate-900/40 border border-slate-700/50 backdrop-blur-md p-6 flex flex-col items-start justify-between group overflow-hidden"
         >
-            {/* Internal Glow */}
+        
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
             <div className="relative z-10 p-3 bg-slate-800/50 rounded-lg border border-slate-700 text-cyan-400 mb-4 group-hover:text-cyan-300 transition-colors">
@@ -60,7 +60,7 @@ export const TiltCard = ({ title, description, icon: Icon, delay }: TiltCardProp
                 <p className="text-slate-400 text-sm leading-relaxed">{description}</p>
             </div>
 
-            {/* Decorative Corner */}
+         
             <div className="absolute top-0 right-0 p-3 opacity-20">
                 <Cpu size={40} strokeWidth={1} />
             </div>

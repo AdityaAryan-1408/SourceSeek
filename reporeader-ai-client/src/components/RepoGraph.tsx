@@ -20,20 +20,15 @@ import { nodeTypes } from '@/components/graph/CustomNodes';
 import { useAppStore } from '@/store/useAppStore';
 import { repoApi } from '@/services/api';
 
-// --- LAYOUT ENGINE ---
 const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-    // --- TUNING THE LAYOUT ---
-    // rankdir: 'TB' (Top to Bottom)
-    // ranksep: 80 (Vertical gap between folders) -> Reduced from 100
-    // nodesep: 20 (Horizontal gap between files) -> Reduced drastically from 80
+    
     dagreGraph.setGraph({ rankdir: 'TB', ranksep: 80, nodesep: 20 });
 
     nodes.forEach((node) => {
-        // We set a fixed width/height for the layout calculation.
-        // Files are small, so 180x50 is a good "bounding box" size.
+        
         dagreGraph.setNode(node.id, { width: 180, height: 50 });
     });
 
@@ -48,7 +43,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
         return {
             ...node,
             position: {
-                // Shift the node so the position is the top-left corner, not the center
+                
                 x: nodeWithPosition.x - 90,
                 y: nodeWithPosition.y - 25,
             },
@@ -77,7 +72,7 @@ const GraphView = () => {
             try {
                 const data = await repoApi.getRepoGraph(repoId);
 
-                // Apply Layout
+                
                 const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
                     data.nodes,
                     data.edges
@@ -92,7 +87,7 @@ const GraphView = () => {
         fetchGraph();
     }, [repoId, setNodes, setEdges]);
 
-    // Sync Selection from Chat
+ 
     useEffect(() => {
         if (!selectedNodeId) return;
         setNodes((nds) => nds.map((n) => ({ ...n, selected: n.id === selectedNodeId })));
@@ -104,7 +99,7 @@ const GraphView = () => {
 
     const handleLoad = (instance: ReactFlowInstance) => {
         setReactFlowInstance(instance);
-        setTimeout(() => instance.fitView(), 100); // Slight delay ensures layout is ready
+        setTimeout(() => instance.fitView(), 100); 
     };
 
     return (

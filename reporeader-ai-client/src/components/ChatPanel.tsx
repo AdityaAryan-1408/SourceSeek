@@ -13,13 +13,13 @@ export default function ChatPanel({ repoId }: ChatPanelProps) {
     const [input, setInput] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Store Access
+
     const chatHistory = useAppStore((state) => state.chatHistory);
     const askQuestion = useAppStore((state) => state.askQuestion);
     const isLoading = useAppStore((state) => state.isLoading);
     const setSelectedNodeId = useAppStore((state) => state.setSelectedNodeId);
 
-    // Auto-scroll
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -33,15 +33,14 @@ export default function ChatPanel({ repoId }: ChatPanelProps) {
         await askQuestion(repoId, question);
     };
 
-    // --- FIX FOR ERROR 2: Actually use this function ---
     const handleSourceClick = (filePath: string) => {
         console.log("Navigating to:", filePath);
-        setSelectedNodeId(filePath); // Zoom the graph
+        setSelectedNodeId(filePath); 
     };
 
     return (
         <div className="flex flex-col h-full w-full bg-[#0a0f1e] border-r border-slate-700/50 relative z-20">
-            {/* Header */}
+           
             <div className="p-4 border-b border-slate-700/50 bg-[#0a0f1e]/95 backdrop-blur-md flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="relative">
@@ -60,10 +59,10 @@ export default function ChatPanel({ repoId }: ChatPanelProps) {
                 </div>
             </div>
 
-            {/* Messages */}
+            
             <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent" ref={scrollRef}>
 
-                {/* Empty State */}
+                
                 {chatHistory.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-4 opacity-60">
                         <Sparkles size={32} className="text-cyan-500/50" />
@@ -100,7 +99,6 @@ export default function ChatPanel({ repoId }: ChatPanelProps) {
                                     </ReactMarkdown>
                                 </div>
 
-                                {/* --- RENDER SOURCES (Using handleSourceClick) --- */}
                                 {msg.sources && msg.sources.length > 0 && (
                                     <div className="mt-2 w-full space-y-1">
                                         <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono uppercase tracking-wider mb-1">

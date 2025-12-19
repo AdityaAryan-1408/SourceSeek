@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Loader2, CheckCircle2, Terminal, Cpu, Database, Network, Minimize2 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Button } from "@/components/ui/button";
-import { useAppStore } from "@/store/useAppStore"; // Import Store
+import { useAppStore } from "@/store/useAppStore"; 
 
 const STEPS = [
     { id: 1, label: 'Cloning Repository...', icon: Network, duration: 2000 },
@@ -18,7 +18,7 @@ interface AnalysisLoadingProps {
 }
 
 export const AnalysisLoading = ({ onBackground }: AnalysisLoadingProps) => {
-    // USE GLOBAL STATE instead of local state
+    
     const currentStep = useAppStore((state) => state.analysisCurrentStep);
     const setCurrentStep = useAppStore((state) => state.setAnalysisCurrentStep);
 
@@ -28,15 +28,14 @@ export const AnalysisLoading = ({ onBackground }: AnalysisLoadingProps) => {
         const runSteps = (index: number) => {
             if (index >= STEPS.length) return;
 
-            // Only update if we are moving forward
+           
             if (index > currentStep) {
                 setCurrentStep(index);
             }
 
-            // If we are already ahead (from persisted state), skip to next
+ 
             const nextIndex = Math.max(index, currentStep) + 1;
 
-            // Calculate delay: if we are catching up, use 0, else use duration
             const delay = index < currentStep ? 0 : STEPS[index].duration;
 
             timeout = setTimeout(() => {
@@ -44,11 +43,10 @@ export const AnalysisLoading = ({ onBackground }: AnalysisLoadingProps) => {
             }, delay);
         };
 
-        // Start from current persisted step
         runSteps(currentStep);
 
         return () => clearTimeout(timeout);
-    }, []); // Run once on mount
+    }, []); 
 
     return (
         <div className="fixed inset-0 z-50 bg-[#0a0f1e]/90 backdrop-blur-md flex flex-col items-center justify-center p-4 font-mono">

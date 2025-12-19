@@ -5,7 +5,7 @@ interface FeatureSectionProps {
     title: string;
     description: string;
     reverse?: boolean;
-    videoSrc?: string; // New prop for the video path
+    videoSrc?: string;
 }
 
 export const FeatureSection = ({
@@ -40,9 +40,7 @@ export const FeatureSection = ({
                     </p>
                 </div>
 
-                {/* Video / Media Area */}
                 <div className="relative group">
-                    {/* Glow Effect */}
                     <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
 
                     <div className="relative rounded-2xl overflow-hidden border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm shadow-2xl">
@@ -56,7 +54,7 @@ export const FeatureSection = ({
                                 src={videoSrc}
                             />
                         ) : (
-                            // Fallback if no video is provided yet
+
                             <div className="aspect-video bg-slate-950 flex items-center justify-center border-slate-800">
                                 <p className="text-slate-500 text-sm font-mono">Add {`"${title}"`} video to public folder</p>
                             </div>

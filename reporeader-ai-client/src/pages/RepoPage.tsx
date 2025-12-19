@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Code2, ArrowLeft } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 
-// ... (CollapsedPanelContent component stays the same) ...
 const CollapsedPanelContent = ({ label, onClick }: { label: string, onClick: () => void }) => {
     return (
         <div className="flex items-center justify-center h-full bg-slate-950/50">
@@ -36,32 +35,32 @@ const RepoPage = () => {
     const [isCodeCollapsed, setIsCodeCollapsed] = useState(false);
     const panelGroupRef = useRef<any>(null);
 
-    // 1. Logic Updates
+
     const { repoId } = useParams();
     const navigate = useNavigate();
 
-    // Store Actions
+
     const fetchRepos = useAppStore(state => state.fetchRepos);
     const savedRepos = useAppStore(state => state.savedRepos);
-    const clearChat = useAppStore(state => state.clearChat); // <--- Import clearChat
+    const clearChat = useAppStore(state => state.clearChat);
 
-    // 2. CLEAR CHAT ON MOUNT / CHANGE
+
     useEffect(() => {
-        // Whenever we enter this page or switch repos, wipe the slate clean.
+        
         clearChat();
     }, [repoId, clearChat]);
 
-    // Fetch repos if page is refreshed (prevents empty store)
+
     useEffect(() => {
         if (savedRepos.length === 0) {
             fetchRepos();
         }
     }, [savedRepos.length, fetchRepos]);
 
-    // Safety Check
+
     if (!repoId) return <div className="p-10 text-white">Error: No Repository ID found.</div>;
 
-    // Smart Expand Logic
+
     const expandChatPanel = () => {
         const layout = panelGroupRef.current?.getLayout();
         if (layout) {
@@ -81,7 +80,6 @@ const RepoPage = () => {
     return (
         <CinematicWrapper className="h-screen overflow-hidden flex flex-col">
 
-            {/* Header for Navigation */}
             <div className="h-14 mt-16 border-b border-slate-800 bg-slate-950/50 flex items-center justify-between px-4 shrink-0 z-10">
                 <div className="flex items-center gap-4">
                     <Button
@@ -100,14 +98,12 @@ const RepoPage = () => {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="flex-1 overflow-hidden relative w-full">
                 <ResizablePanelGroup
                     ref={panelGroupRef}
                     direction="horizontal"
                     className="h-full w-full"
                 >
-                    {/* Panel 1: Chat */}
                     <ResizablePanel
                         defaultSize={25}
                         minSize={15}
@@ -126,7 +122,6 @@ const RepoPage = () => {
 
                     <ResizableHandle withHandle className="bg-slate-800 hover:bg-cyan-500 transition-colors w-[2px]" />
 
-                    {/* Panel 2: Graph */}
                     <ResizablePanel defaultSize={50} minSize={10} className="bg-transparent relative">
                         {/* Graph Container */}
                         <div className="absolute inset-0">
@@ -136,7 +131,6 @@ const RepoPage = () => {
 
                     <ResizableHandle withHandle className="bg-slate-800 hover:bg-cyan-500 transition-colors w-[2px]" />
 
-                    {/* Panel 3: Code */}
                     <ResizablePanel
                         defaultSize={25}
                         minSize={15}

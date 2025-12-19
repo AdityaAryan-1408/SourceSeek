@@ -6,7 +6,6 @@ import { Footer } from '@/components/landing/Footer';
 import { FeatureSection } from '@/components/landing/FeatureSection';
 import { cn } from "@/lib/utils";
 
-// --- BENTO GRID COMPONENT ---
 const BentoItem = ({ title, description, icon: Icon, className, delay }: any) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -51,18 +50,14 @@ export default function IntroPage() {
     return (
         <div className="relative min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
 
-            {/* Background Layers */}
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-20%,#0f172a,rgba(2,6,23,1))] pointer-events-none z-0" />
             <ParticleNetwork />
             {noiseFilter}
 
-            {/* Main Content */}
             <main className="relative z-10 flex flex-col items-center w-full max-w-7xl mx-auto pt-20">
 
-                {/* 1. Hero Section */}
                 <HeroSection />
 
-                {/* 2. Capabilities (Bento Grid) */}
                 <section className="w-full pb-32 px-4">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                         <motion.h2
@@ -90,7 +85,7 @@ export default function IntroPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Row 1 */}
+                
                         <BentoItem
                             title="Static Analysis"
                             description="Deep dive into code structures without cloning locally. Syntax highlighting and dependency graphing in real-time."
@@ -106,7 +101,7 @@ export default function IntroPage() {
                             delay={2}
                         />
 
-                        {/* Row 2 */}
+                       
                         <BentoItem
                             title="Semantic Search"
                             description="Find functions, definitions, and references using vector embeddings rather than simple string matching."
@@ -122,7 +117,7 @@ export default function IntroPage() {
                             delay={4}
                         />
 
-                        {/* Row 3 */}
+                        
                         <BentoItem
                             title="Code Metrics"
                             description="Cyclomatic complexity, maintainability index, and line counts visualized instantly upon repository load."
@@ -140,7 +135,6 @@ export default function IntroPage() {
                     </div>
                 </section>
 
-                {/* 3. How It Works Section */}
                 <section className="w-full pb-32 px-4">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                         <motion.h2
@@ -189,7 +183,6 @@ export default function IntroPage() {
                     </div>
                 </section>
 
-                {/* 4. Footer */}
                 <div className="w-full px-4">
                     <Footer />
                 </div>

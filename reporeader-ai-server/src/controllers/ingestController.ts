@@ -9,20 +9,16 @@ import { generateEmbedding } from "../services/aiService";
 import prisma from "../lib/prisma";
 import { getRepoFileCount } from "../services/githubService";
 
-// --- INTERFACES ---
 interface AuthenticatedRequest extends Request {
     user?: {
-        id: string;      // Required by Passport/Global type
-        userId: string;  // Required by your Controller logic
+        id: string;
+        userId: string;
         email: string;
     }
 }
 
-// --- HELPER: Sleep ---
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// --- HELPER: Retry Wrapper for Embeddings ---
-// This allows us to go fast, but slows down automatically if we hit a rate limit.
 const generateEmbeddingWithRetry = async (text: string, retries = 3): Promise<number[] | null> => {
     for (let i = 0; i < retries; i++) {
         try {
@@ -32,10 +28,10 @@ const generateEmbeddingWithRetry = async (text: string, retries = 3): Promise<nu
 
             if (isRateLimit && i < retries - 1) {
                 console.warn(`[AI] Rate limit hit. Retrying in ${(i + 1) * 2}s...`);
-                await sleep((i + 1) * 2000); // Backoff: 2s, 4s, 6s...
+                await sleep((i + 1) * 2000);
                 continue;
             }
-            // If it's not a rate limit, or we ran out of retries, return null
+
             console.error(`[AI] Embedding failed:`, error.message);
             return null;
         }
@@ -43,13 +39,11 @@ const generateEmbeddingWithRetry = async (text: string, retries = 3): Promise<nu
     return null;
 };
 
-// --- HELPER: Process a SINGLE file ---
 const processSingleFile = async (file: any, tempPath: string, repoId: string) => {
     try {
         const fullPath = path.join(tempPath, file.path);
         const content = await processFile(fullPath);
 
-        // Skip if empty or huge
         if (!content || content.length > 30000) return null;
 
         const fileRecord = await prisma.repoFile.create({
@@ -59,12 +53,11 @@ const processSingleFile = async (file: any, tempPath: string, repoId: string) =>
         const chunks = chunkSourceCode(content, file.name);
 
         for (const chunk of chunks) {
-            // 1. Generate Vector with Retry Logic
             const vector = await generateEmbeddingWithRetry(chunk.content);
 
-            if (!vector) continue; // Skip failed chunks
+            if (!vector) continue;
 
-            // 2. Insert into DB
+
             await prisma.$executeRaw`
                 INSERT INTO "CodeChunk" ("id", "fileId", "startLine", "endLine", "content", "vector", "createdAt")
                 VALUES (
@@ -78,7 +71,7 @@ const processSingleFile = async (file: any, tempPath: string, repoId: string) =>
                 )
             `;
 
-            // Optimization: Reduced delay from 1000ms to 100ms
+
             await sleep(100);
         }
 
@@ -89,7 +82,6 @@ const processSingleFile = async (file: any, tempPath: string, repoId: string) =>
     }
 };
 
-// --- WORKER: Concurrency Manager ---
 const performIngestion = async (repoId: string, repoUrl: string, tempPath: string) => {
     try {
         console.log(`[IngestWorker] Starting background job for: ${repoUrl}`);
@@ -107,7 +99,6 @@ const performIngestion = async (repoId: string, repoUrl: string, tempPath: strin
 
         const allFiles = flattenFiles(fileTree);
 
-        // 1. FILTERING
         const IGNORED_EXTENSIONS = new Set([
             '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.json',
             '.lock', '.md', '.txt', '.map', '.css', '.scss', '.html',
@@ -127,21 +118,17 @@ const performIngestion = async (repoId: string, repoUrl: string, tempPath: strin
 
         console.log(`[IngestWorker] Filtered down to ${filesToProcess.length} valid files.`);
 
-        // 2. CONCURRENT PROCESSING (Batch Size: 5)
-        // We process 5 files at once instead of 1 by 1.
         const BATCH_SIZE = 5;
 
         for (let i = 0; i < filesToProcess.length; i += BATCH_SIZE) {
             const batch = filesToProcess.slice(i, i + BATCH_SIZE);
             console.log(`[IngestWorker] Processing batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} files)...`);
 
-            // Run batch in parallel
             await Promise.all(
                 batch.map(file => processSingleFile(file, tempPath, repoId))
             );
         }
 
-        // UPDATE STATUS
         await prisma.repository.update({
             where: { id: repoId },
             data: { status: "COMPLETED" }
@@ -157,7 +144,6 @@ const performIngestion = async (repoId: string, repoUrl: string, tempPath: strin
     }
 };
 
-// --- THE API ENDPOINT ---
 export const ingestRepo = async (req: Request, res: Response): Promise<any> => {
     const { repoUrl, repoName } = req.body;
     const authReq = req as AuthenticatedRequest;
@@ -181,7 +167,6 @@ export const ingestRepo = async (req: Request, res: Response): Promise<any> => {
     if (!userId) return res.status(401).json({ error: "User not authenticated" });
     if (!repoName || !repoUrl) return res.status(400).json({ error: "Missing Name/URL" });
 
-    // File Limit Check
     const FILE_LIMIT = 300;
     const fileCount = await getRepoFileCount(repoUrl);
 
@@ -206,7 +191,7 @@ export const ingestRepo = async (req: Request, res: Response): Promise<any> => {
         const processingId = uuidv4();
         const tempPath = path.join(__dirname, '../../temp', processingId);
 
-        // Trigger Worker
+
         performIngestion(repo.id, repoUrl, tempPath);
 
         return res.status(200).json({

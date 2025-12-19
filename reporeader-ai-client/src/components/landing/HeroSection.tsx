@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 import { Github, ArrowRight } from 'lucide-react';
 import { ScrambleText } from '@/components/landing/ScrambleText';
 import { MagneticButton } from '@/components/landing/MagneticButton';
-import { useAppStore } from '@/store/useAppStore'; // <--- Import Store
+import { useAppStore } from '@/store/useAppStore';
 
 export const HeroSection = () => {
     const navigate = useNavigate();
     const [repoUrl, setRepoUrl] = useState('');
     const [isFocused, setIsFocused] = useState(false);
 
-    // Get Current User from Store
+
     const currentUser = useAppStore((state) => state.currentUser);
 
     const [wordIndex, setWordIndex] = useState(0);
@@ -24,17 +24,13 @@ export const HeroSection = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // --- UPDATED LOGIC ---
     const handleAnalyze = () => {
-        // 1. Basic Validation: Don't do anything if empty
+
         if (!repoUrl.trim()) return;
 
         if (currentUser) {
-            // 2. If Logged In -> Go to Dashboard and pass the URL
             navigate('/dashboard', { state: { prefillUrl: repoUrl } });
         } else {
-            // 3. If Not Logged In -> Go to Auth
-            // (Optional: You could save repoUrl to localStorage here to restore it after login)
             navigate('/auth');
         }
     };
@@ -42,21 +38,18 @@ export const HeroSection = () => {
     return (
         <section className="w-full flex flex-col items-center text-center space-y-10 mb-24 pt-20 relative z-20">
 
-            {/* 1. MAIN TITLE */}
             <h1 className="text-5xl md:text-8xl font-black tracking-tight text-white max-w-7xl mx-auto leading-[1.1]">
-
-                {/* Just the Text Brand Name (Gradient) */}
                 <span className="block mb-6 drop-shadow-2xl">
                     <span className="text-white">Source</span>
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">Seek</span>
                 </span>
 
-                {/* Line 1: Stop Browsing. */}
+
                 <span className="block text-white drop-shadow-2xl">
                     Stop Browsing.
                 </span>
 
-                {/* Line 2: Start [Scramble] */}
+
                 <span className="block">
                     Start{" "}
                     <span className="text-cyan-400 drop-shadow-[0_0_30px_rgba(34,211,238,0.4)]">
@@ -66,7 +59,7 @@ export const HeroSection = () => {
                 </span>
             </h1>
 
-            {/* 2. SUBTITLE */}
+
             <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -76,14 +69,14 @@ export const HeroSection = () => {
                 Transform static GitHub repositories into interactive, visual knowledge bases. Navigate complex codebases with the speed of thought.
             </motion.p>
 
-            {/* 3. THE PORTAL SEARCH BAR */}
+
             <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.5, type: "spring" }}
                 className="relative w-full max-w-xl px-4 group"
             >
-                {/* Animated Glow Backdrop */}
+
                 <div
                     className={`absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-tilt ${isFocused ? 'opacity-80 blur-md' : ''}`}
                 ></div>

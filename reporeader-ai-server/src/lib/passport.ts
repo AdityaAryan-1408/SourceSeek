@@ -25,7 +25,6 @@ passport.use(
                 console.log("[Passport] GitHub Profile received:", profile.username);
 
                 const githubId = profile.id;
-                // GitHub ensures the email exists if we ask for scope ['user:email']
                 const email = profile.emails && profile.emails[0] ? profile.emails[0].value : null;
 
                 console.log("[Passport] Extracted Email:", email);
@@ -35,7 +34,6 @@ passport.use(
                     return done(new Error('No email found in GitHub profile'), null);
                 }
 
-                // 1. Check if user exists by GitHub ID
                 let user = await prisma.user.findUnique({
                     where: { githubId: githubId },
                 });
@@ -45,7 +43,6 @@ passport.use(
                     return done(null, user);
                 }
 
-                // 2. Check if user exists by Email (Link accounts)
                 console.log("[Passport] No GitHub ID match. Checking email...");
                 user = await prisma.user.findUnique({
                     where: { email: email },
@@ -60,7 +57,6 @@ passport.use(
                     return done(null, user);
                 }
 
-                // 3. Create new user
                 console.log("[Passport] Creating new user...");
                 user = await prisma.user.create({
                     data: {

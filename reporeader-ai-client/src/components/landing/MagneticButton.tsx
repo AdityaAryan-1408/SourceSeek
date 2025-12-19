@@ -22,7 +22,7 @@ export const MagneticButton = ({ children, className, onClick }: MagneticButtonP
         const { height, width, left, top } = ref.current.getBoundingClientRect();
         const middleX = clientX - (left + width / 2);
         const middleY = clientY - (top + height / 2);
-        x.set(middleX * 0.3); // Magnetic pull strength
+        x.set(middleX * 0.3); 
         y.set(middleY * 0.3);
     };
 

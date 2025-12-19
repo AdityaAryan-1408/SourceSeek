@@ -12,7 +12,7 @@ export const Logo = ({ className = "h-8 w-8" }: LogoProps) => {
         ${className}
       `}
         >
-            {/* The terminal prompt symbol */}
+            
             <span className="font-mono font-bold text-white text-sm tracking-tighter select-none">
                 &gt;_
             </span>

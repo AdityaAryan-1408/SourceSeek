@@ -2,8 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authApi, repoApi, chatApi } from '../services/api';
 
-// --- Types ---
-// (Keep existing types)
+
 interface User { id: string; email: string; name: string; }
 interface Repository { id: string; name: string; url: string; status: 'PENDING' | 'INGESTING' | 'COMPLETED' | 'FAILED'; }
 interface ChatMessage { sender: 'user' | 'ai'; message: string; sources?: { filePath: string; startLine: number; endLine: number }[]; }
@@ -20,9 +19,8 @@ interface AppState {
     currentHighlight: Highlight | null;
     reactFlowInstance: any;
 
-    // Track background analysis
     analyzingRepoId: string | null;
-    analysisCurrentStep: number; // <--- NEW: Track visual step
+    analysisCurrentStep: number;
 
     // Auth
     login: (email: string, password: string) => Promise<void>;
@@ -47,13 +45,13 @@ interface AppState {
     setError: (error: string | null) => void;
 
     setAnalyzingRepoId: (id: string | null) => void;
-    setAnalysisCurrentStep: (step: number) => void; // <--- NEW ACTION
+    setAnalysisCurrentStep: (step: number) => void; 
 }
 
 export const useAppStore = create<AppState>()(
     persist(
         (set, get) => ({
-            // 1. Initial State
+            
             currentUser: null,
             savedRepos: [],
             chatHistory: [],
@@ -63,11 +61,10 @@ export const useAppStore = create<AppState>()(
             currentHighlight: null,
             reactFlowInstance: null,
             analyzingRepoId: null,
-            analysisCurrentStep: 0, // <--- Initial Value
+            analysisCurrentStep: 0,
 
-            // 2. Actions
             setAnalyzingRepoId: (id) => set({ analyzingRepoId: id }),
-            setAnalysisCurrentStep: (step) => set({ analysisCurrentStep: step }), // <--- Implementation
+            setAnalysisCurrentStep: (step) => set({ analysisCurrentStep: step }), 
 
             verifySession: async () => {
                 const token = localStorage.getItem('token');
@@ -82,7 +79,6 @@ export const useAppStore = create<AppState>()(
                 }
             },
 
-            // --- AUTHENTICATION ---
             login: async (email, password) => {
                 set({ isLoading: true, error: null });
                 try {
@@ -117,7 +113,6 @@ export const useAppStore = create<AppState>()(
                 }
             },
 
-            // --- REPOSITORIES ---
             fetchRepos: async () => {
                 set({ isLoading: true, error: null });
                 try {
@@ -151,7 +146,6 @@ export const useAppStore = create<AppState>()(
                 }
             },
 
-            // --- CHAT & AI ---
             askQuestion: async (repoId, question) => {
                 set((state) => ({
                     chatHistory: [...state.chatHistory, { sender: 'user', message: question }],
@@ -201,7 +195,7 @@ export const useAppStore = create<AppState>()(
 
             clearChat: () => set({ chatHistory: [], currentHighlight: null, selectedNodeId: null }),
 
-            // --- UI HELPERS ---
+      
             setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
             setCurrentHighlight: (highlight: Highlight | null) => set({ currentHighlight: highlight }),
             setReactFlowInstance: (instance) => set({ reactFlowInstance: instance }),
@@ -213,7 +207,7 @@ export const useAppStore = create<AppState>()(
                 currentUser: state.currentUser,
                 savedRepos: state.savedRepos,
                 analyzingRepoId: state.analyzingRepoId,
-                analysisCurrentStep: state.analysisCurrentStep // <--- Persist this!
+                analysisCurrentStep: state.analysisCurrentStep 
             }),
         }
     )

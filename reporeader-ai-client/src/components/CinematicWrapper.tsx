@@ -20,16 +20,12 @@ export const CinematicWrapper = ({ children, className = "" }: CinematicWrapperP
     return (
         <div className="relative min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
 
-            {/* Layer 0: Deep Gradient Background */}
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-20%,#0f172a,rgba(2,6,23,1))] pointer-events-none z-0" />
 
-            {/* Layer 1: The Custom Particle Network Canvas */}
             <ParticleNetwork />
 
-            {/* Layer 2: Cinematic Noise Overlay */}
             {noiseFilter}
 
-            {/* Layer 3: Content */}
             <div className={`relative z-10 w-full ${className}`}>
                 {children}
             </div>

@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/store/useAppStore";
-import { ExternalLink, LogOut } from "lucide-react"; // <--- Import LogOut
+import { ExternalLink, LogOut } from "lucide-react"; 
 import { Logo } from "@/components/Logo";
 
 export const Navbar = () => {
@@ -9,7 +9,7 @@ export const Navbar = () => {
     const location = useLocation();
 
     const currentUser = useAppStore((state) => state.currentUser);
-    const logout = useAppStore((state) => state.logout); // <--- Get logout action
+    const logout = useAppStore((state) => state.logout);
     const savedRepos = useAppStore((state) => state.savedRepos);
 
     const match = matchPath("/repo/:id", location.pathname);
@@ -36,7 +36,7 @@ export const Navbar = () => {
         <header className="fixed top-0 left-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-slate-800/50">
             <nav className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
 
-                {/* Logo & Brand Name */}
+                
                 <div
                     className="flex items-center gap-3 cursor-pointer group"
                     onClick={() => navigate('/')}
@@ -49,7 +49,7 @@ export const Navbar = () => {
                     </span>
                 </div>
 
-                {/* Navigation Buttons */}
+                
                 <div className="flex items-center gap-4">
 
                     {activeRepo && (
@@ -63,7 +63,7 @@ export const Navbar = () => {
                         </Button>
                     )}
 
-                    {/* NEW: Sign Out Button */}
+                    
                     {currentUser && (
                         <Button
                             variant="ghost"

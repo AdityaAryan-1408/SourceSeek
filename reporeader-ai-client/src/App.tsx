@@ -9,11 +9,11 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 const router = createBrowserRouter([
   {
-    // This is the new Root Layout route
+   
     path: "/",
     element: <RootLayout />,
     children: [
-      // These are the children. They will render inside the <Outlet />
+     
       {
         path: "/",
         element: <IntroPage />,

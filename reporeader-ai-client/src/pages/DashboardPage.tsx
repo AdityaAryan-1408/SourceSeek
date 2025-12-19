@@ -19,7 +19,6 @@ const DashboardPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Store
     const currentUser = useAppStore((state) => state.currentUser);
     const savedRepos = useAppStore((state) => state.savedRepos);
     const fetchRepos = useAppStore((state) => state.fetchRepos);
@@ -28,15 +27,12 @@ const DashboardPage = () => {
     const setAnalyzingRepoId = useAppStore((state) => state.setAnalyzingRepoId);
     const setAnalysisCurrentStep = useAppStore((state) => state.setAnalysisCurrentStep);
 
-    // State
     const [repoUrl, setRepoUrl] = useState("");
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
-    // Use a Ref to ensure we only trigger auto-analysis once
     const autoRunRef = useRef(false);
 
-    // 1. Auth Check
     useEffect(() => {
         if (!currentUser) {
             navigate("/auth");
@@ -45,21 +41,16 @@ const DashboardPage = () => {
         fetchRepos();
     }, [currentUser, navigate, fetchRepos]);
 
-    // 2. CHECK FOR URL FROM HERO SECTION
     useEffect(() => {
         if (location.state?.prefillUrl && !autoRunRef.current && !analyzingRepoId) {
             const url = location.state.prefillUrl;
 
-            // 1. Set URL in input
             setRepoUrl(url);
 
-            // 2. Clear state history so refresh doesn't trigger it again
             window.history.replaceState({}, document.title);
 
-            // 3. Trigger Analysis automatically
             autoRunRef.current = true;
 
-            // Small timeout to allow state to settle
             setTimeout(() => {
                 handleAnalyze(url);
             }, 500);
@@ -67,42 +58,38 @@ const DashboardPage = () => {
     }, [location.state, analyzingRepoId]);
 
 
-    // 3. POLLING LOGIC (Consolidated)
     useEffect(() => {
         let intervalId: ReturnType<typeof setInterval>;
 
         if (analyzingRepoId) {
-            // Ensure modal is open if we are analyzing
+            
             setShowAnalysisModal(true);
 
             const checkStatus = async () => {
                 try {
-                    // Capture the ID we are checking
+                    
                     const currentId = analyzingRepoId;
 
-                    // 1. Check status from backend
+                    
                     const repoStatus = await repoApi.getRepo(currentId);
 
                     if (repoStatus.status === "COMPLETED") {
-                        // --- SUCCESS! ---
-
-                        // 1. Notify user
+                        
                         setNotification({ type: 'success', message: `Analysis complete! Opening graph...` });
 
-                        // 2. Stop Polling & Clear Loading UI
+                        
                         setAnalyzingRepoId(null);
                         setAnalysisCurrentStep(0);
                         setShowAnalysisModal(false);
 
-                        // 3. Refresh list in background
+                        
                         await fetchRepos();
 
-                        // 4. Navigate
-                        // We use currentId here because analyzingRepoId state will be null shortly
+                       
                         navigate(`/repo/${currentId}`);
                     }
                     else if (repoStatus.status === "FAILED") {
-                        // --- FAILURE ---
+                       
                         setAnalyzingRepoId(null);
                         setAnalysisCurrentStep(0);
                         setShowAnalysisModal(false);
@@ -114,7 +101,7 @@ const DashboardPage = () => {
                 }
             };
 
-            // Poll every 2 seconds
+           
             intervalId = setInterval(checkStatus, 2000);
         }
 
@@ -124,7 +111,6 @@ const DashboardPage = () => {
     }, [analyzingRepoId, setAnalyzingRepoId, fetchRepos, setAnalysisCurrentStep, navigate]);
 
 
-    // Helper
     const getRepoNameFromUrl = (url: string) => {
         try {
             const cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
@@ -138,7 +124,6 @@ const DashboardPage = () => {
         }
     };
 
-    // Handle Analyze
     const handleAnalyze = async (urlToUse?: string) => {
         const targetUrl = urlToUse || repoUrl;
 
@@ -156,7 +141,6 @@ const DashboardPage = () => {
 
             const data = await repoApi.ingestRepo(targetUrl.trim(), repoName);
 
-            // Setting this triggers the useEffect above
             setAnalyzingRepoId(data.id);
             setShowAnalysisModal(true);
             setRepoUrl("");
@@ -237,7 +221,6 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
 
-                {/* Repo List */}
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-white flex items-center">
                         <ListOrdered className="h-6 w-6 mr-3 text-cyan-400" />

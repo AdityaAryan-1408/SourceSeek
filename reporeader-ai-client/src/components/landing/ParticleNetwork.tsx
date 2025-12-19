@@ -2,8 +2,7 @@ import { useEffect, useRef } from 'react';
 
 export const ParticleNetwork = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    // We use a ref for mouse position so the animation loop 
-    // can access the latest value without triggering re-renders
+    
     const mouseRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
 
     useEffect(() => {
@@ -16,15 +15,15 @@ export const ParticleNetwork = () => {
         let animationFrameId: number;
         let particles: Particle[] = [];
 
-        // --- RESIZE HANDLER ---
+
         const resize = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         };
         window.addEventListener('resize', resize);
-        resize(); // Initial size
+        resize(); 
 
-        // --- PARTICLE CLASS ---
+   
         class Particle {
             x: number;
             y: number;
@@ -39,14 +38,14 @@ export const ParticleNetwork = () => {
                 this.vx = (Math.random() - 0.5) * 0.5;
                 this.vy = (Math.random() - 0.5) * 0.5;
                 this.size = Math.random() * 2 + 1;
-                this.color = `rgba(6, 182, 212, ${Math.random() * 0.5})`; // Cyan with random opacity
+                this.color = `rgba(6, 182, 212, ${Math.random() * 0.5})`; 
             }
 
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Mouse Interaction (Repel effect)
+    
                 if (mouseRef.current.x != null && mouseRef.current.y != null) {
                     const dx = mouseRef.current.x - this.x;
                     const dy = mouseRef.current.y - this.y;
@@ -63,7 +62,7 @@ export const ParticleNetwork = () => {
                     }
                 }
 
-                // Boundary wrap (Infinite loop effect)
+   
                 if (canvas) {
                     if (this.x < 0) this.x = canvas.width;
                     if (this.x > canvas.width) this.x = 0;
@@ -81,18 +80,17 @@ export const ParticleNetwork = () => {
             }
         }
 
-        // --- INITIALIZATION ---
+
         const init = () => {
             particles = [];
-            // Calculate number of particles based on screen area
-            // Fewer particles on mobile, more on desktop
+            
             const numberOfParticles = (canvas.width * canvas.height) / 15000;
             for (let i = 0; i < numberOfParticles; i++) {
                 particles.push(new Particle());
             }
         };
 
-        // --- ANIMATION LOOP ---
+
         const animate = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -100,7 +98,7 @@ export const ParticleNetwork = () => {
                 particles[i].update();
                 particles[i].draw();
 
-                // Draw connections between close particles
+         
                 for (let j = i; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
@@ -108,8 +106,8 @@ export const ParticleNetwork = () => {
 
                     if (distance < 120) {
                         ctx.beginPath();
-                        // Dynamic line opacity based on distance
-                        ctx.strokeStyle = `rgba(59, 130, 246, ${1 - distance / 120})`; // Blue fade
+      
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${1 - distance / 120})`;
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -123,7 +121,7 @@ export const ParticleNetwork = () => {
         init();
         animate();
 
-        // --- MOUSE HANDLERS ---
+
         const handleMouseMove = (e: MouseEvent) => {
             mouseRef.current.x = e.clientX;
             mouseRef.current.y = e.clientY;
@@ -131,7 +129,7 @@ export const ParticleNetwork = () => {
 
         window.addEventListener('mousemove', handleMouseMove);
 
-        // --- CLEANUP ---
+
         return () => {
             window.removeEventListener('resize', resize);
             window.removeEventListener('mousemove', handleMouseMove);

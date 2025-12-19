@@ -14,9 +14,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-/* =========================
-   1. EMBEDDINGS
-========================= */
+
 
 export const generateEmbedding = async (text: string): Promise<number[]> => {
     const maxRetries = 3;
@@ -54,9 +52,7 @@ export const generateEmbedding = async (text: string): Promise<number[]> => {
     throw new Error("Embedding model unavailable after retries");
 };
 
-/* =========================
-   2. VECTOR SEARCH
-========================= */
+
 
 export const findRelevantChunks = async (question: string, repoId: string) => {
     console.log(`[AI Service] Searching context for repo ${repoId}`);
@@ -80,9 +76,7 @@ export const findRelevantChunks = async (question: string, repoId: string) => {
     return result as any[];
 };
 
-/* =========================
-   3. GENERATION PROVIDERS
-========================= */
+
 
 const generateWithGemini = async (prompt: string): Promise<string> => {
     const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
@@ -124,9 +118,7 @@ const generateWithHuggingFace = async (prompt: string): Promise<string> => {
     return response.generated_text;
 };
 
-/* =========================
-   4. ANSWER GENERATION (IMPROVED)
-========================= */
+
 
 export const generateAnswer = async (
     question: string,
@@ -142,7 +134,7 @@ export const generateAnswer = async (
         };
     }
 
-    // Pass the index (0-4) to the AI so it can reference it
+   
     const contextString = contextChunks.map((chunk, index) =>
         `[Source ${index}]: File: ${chunk.filePath} (Lines ${chunk.startLine}-${chunk.endLine})
 ${chunk.content}`
@@ -186,12 +178,11 @@ Rules:
         }
     }
 
-    // --- SMART SOURCE PARSING ---
-    // 1. Default to the first chunk if parsing fails
+
     let bestMatchIndex = 0;
     let cleanAnswer = fullResponse;
 
-    // 2. Look for the [SOURCE: X] tag
+
     const sourceMatch = fullResponse.match(/\[SOURCE:\s*(\d+)\]/i);
 
     if (sourceMatch && sourceMatch[1]) {
@@ -200,7 +191,7 @@ Rules:
             bestMatchIndex = index;
             console.log(`[AI Smart Match] AI selected Source ${index}: ${contextChunks[index].filePath}`);
         }
-        // 3. Remove the tag from the message shown to the user
+       
         cleanAnswer = fullResponse.replace(/\[SOURCE:\s*\d+\]/gi, "").trim();
     } else {
         console.log(`[AI Smart Match] No source tag found. Defaulting to Vector Search Rank #1.`);

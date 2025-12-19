@@ -8,28 +8,24 @@ import { FileCode, Copy, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export const CodeViewer = () => {
-    // Store Access
     const selectedNodeId = useAppStore((state) => state.selectedNodeId);
     const currentHighlight = useAppStore((state) => state.currentHighlight);
     const reactFlowInstance = useAppStore((state) => state.reactFlowInstance);
 
-    // Local State
     const [code, setCode] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // --- EFFECT: Fetch Code when Node Changes ---
     useEffect(() => {
         const fetchCode = async () => {
             if (!selectedNodeId || !reactFlowInstance) return;
 
-            // 1. Find the node to get the real Database ID
             const node = reactFlowInstance.getNode(selectedNodeId);
             const dbId = node?.data?.dbId;
 
             if (!dbId) {
-                // If it's a folder or special node without a DB ID, we can't show code
+                
                 setCode(null);
                 return;
             }
@@ -38,7 +34,6 @@ export const CodeViewer = () => {
             setError(null);
 
             try {
-                // 2. Call the API
                 const data = await repoApi.getFileContent(dbId);
                 setCode(data.content);
             } catch (err) {
@@ -53,7 +48,6 @@ export const CodeViewer = () => {
         fetchCode();
     }, [selectedNodeId, reactFlowInstance]);
 
-    // Derived State for Header
     const fileName = selectedNodeId ? selectedNodeId.split('/').pop() : "";
     const language = fileName?.split('.').pop() === 'ts' || fileName?.split('.').pop() === 'tsx' ? 'typescript' : 'javascript';
     const filePath = selectedNodeId || "";
@@ -66,9 +60,6 @@ export const CodeViewer = () => {
         }
     };
 
-    // --- RENDER STATES ---
-
-    // 1. No Selection
     if (!selectedNodeId) {
         return (
             <div className="h-full w-full bg-gray-900/50 flex flex-col items-center justify-center text-gray-500">
@@ -83,7 +74,6 @@ export const CodeViewer = () => {
         );
     }
 
-    // 2. Loading
     if (isLoading) {
         return (
             <div className="h-full w-full bg-gray-950 flex flex-col items-center justify-center text-cyan-500">
@@ -93,7 +83,6 @@ export const CodeViewer = () => {
         );
     }
 
-    // 3. Error
     if (error || !code) {
         return (
             <div className="h-full w-full bg-gray-950 flex flex-col items-center justify-center text-red-400">
@@ -102,11 +91,10 @@ export const CodeViewer = () => {
         );
     }
 
-    // 4. Content Viewer
     return (
         <div className="flex flex-col h-full w-full bg-gray-950 border-l border-gray-800">
 
-            {/* Header */}
+            
             <div className="h-12 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-800">
                 <div className="flex items-center text-sm text-gray-400 overflow-hidden whitespace-nowrap">
                     <FileCode className="h-4 w-4 mr-2 text-blue-400" />
@@ -132,7 +120,7 @@ export const CodeViewer = () => {
                 </div>
             </div>
 
-            {/* Code Area */}
+           
             <div className="flex-1 overflow-hidden relative">
                 <ScrollArea className="h-full w-full">
                     <SyntaxHighlighter
@@ -148,7 +136,7 @@ export const CodeViewer = () => {
                         lineProps={(lineNumber) => {
                             const style: React.CSSProperties = { display: 'block' };
 
-                            // --- NEON HIGHLIGHT LOGIC ---
+                           
                             if (
                                 currentHighlight &&
                                 lineNumber >= currentHighlight.startLine &&

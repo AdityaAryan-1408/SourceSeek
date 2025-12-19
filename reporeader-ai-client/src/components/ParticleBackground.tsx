@@ -3,7 +3,6 @@ import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import { particlesConfig } from "@/config/particlesConfig";
 
-// 'memo' prevents re-renders when parent state changes (like typing)
 const ParticleBackground = memo(() => {
     const [init, setInit] = useState(false);
 

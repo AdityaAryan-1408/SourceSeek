@@ -8,17 +8,13 @@ export const Footer = () => {
     const handleCheckStatus = async () => {
         if (serverStatus === 'active') return;
 
-        // 1. Set initial waiting state
-        // We don't say "waking" immediately. We wait 2s to see if it's quick.
-
-
         const slowResponseTimer = setTimeout(() => {
 
-            setServerStatus('waking'); // After 2s, we tell user: "Okay, it's sleeping, waking up..."
+            setServerStatus('waking');
         }, 2000);
 
         try {
-            // 2. Fire the request
+
             await systemApi.checkHealth();
 
             // 3. Success!
@@ -28,7 +24,7 @@ export const Footer = () => {
         } catch (error) {
             clearTimeout(slowResponseTimer);
             console.error("Wake-up failed", error);
-            // Optionally set error state, but 'unknown' is fine for retry
+
             setServerStatus('unknown');
         }
     };
@@ -37,7 +33,7 @@ export const Footer = () => {
         <footer className="border-t border-slate-800 bg-slate-950 py-12 mt-20 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
-                {/* --- SERVER STATUS WIDGET --- */}
+
                 <div className="flex justify-center mb-12">
                     <button
                         onClick={handleCheckStatus}
@@ -52,7 +48,7 @@ export const Footer = () => {
                             }
                         `}
                     >
-                        {/* Status Dot */}
+
                         <div className="relative flex h-3 w-3">
                             {serverStatus === 'active' && (
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -62,26 +58,26 @@ export const Footer = () => {
                                 }`}></span>
                         </div>
 
-                        {/* Text */}
+
                         <span className="font-mono text-sm font-medium">
                             {serverStatus === 'active' && "System Online"}
                             {serverStatus === 'waking' && "Waking Server (~50s)..."}
                             {serverStatus === 'unknown' && "Server Status: Unknown (Click to Check)"}
                         </span>
 
-                        {/* Spinner for Waking */}
+
                         {serverStatus === 'waking' && (
                             <Loader2 className="animate-spin h-4 w-4 text-amber-500" />
                         )}
 
-                        {/* Action Icon for Unknown */}
+
                         {serverStatus === 'unknown' && (
                             <Power className="h-4 w-4 group-hover:text-cyan-400 transition-colors" />
                         )}
                     </button>
                 </div>
 
-                {/* --- REST OF FOOTER (Links) --- */}
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                     <div className="col-span-2 md:col-span-1">
                         <div className="flex items-center gap-2 mb-4 text-cyan-400">

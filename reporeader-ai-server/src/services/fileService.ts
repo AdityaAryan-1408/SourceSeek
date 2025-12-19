@@ -2,8 +2,8 @@ import fs from 'fs-extra';
 import path from 'path';
 
 export interface FileNode {
-    path: string; // Path of the file in repo
-    name: string; // name of file
+    path: string;
+    name: string;
     type: 'file' | 'directory';
     children?: FileNode[];
 }
@@ -11,12 +11,11 @@ export interface FileNode {
 const IGNORED_FOLDERS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.next']);
 const IGNORED_FILES = new Set(['package-lock.json', 'yarn.lock', '.DS_Store', '.env']);
 
-// Recursively walks the directory and builds a tree structure.
-// Uses DFS
+
 
 export const generateFileTree = async (dirPath: string, relativePath = ''): Promise<FileNode[]> => {
     const nodes: FileNode[] = [];
-    const items = await fs.readdir(dirPath); // reads all items in a directory
+    const items = await fs.readdir(dirPath); 
 
     for (const item of items) {
         if (IGNORED_FILES.has(item) || IGNORED_FOLDERS.has(item)) continue;
@@ -45,6 +44,6 @@ export const generateFileTree = async (dirPath: string, relativePath = ''): Prom
 }
 
 export const processFile = async (filePath: string): Promise<string> => {
-    // Read file content as UTF-8 string
+   
     return await fs.readFile(filePath, 'utf-8');
 };

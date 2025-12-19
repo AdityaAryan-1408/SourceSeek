@@ -40,21 +40,20 @@ app.get("/api/health", (req: Request, res: Response) => {
     res.status(200).json({ status: "Active", message: "Systems Online" });
 });
 
-// --- ROUTE REGISTRATION ---
 app.use("/auth", authRoutes);
 app.use("/api/repos", repoRoutes);
 app.use("/api/ingest", ingestRoutes);
-app.use("/api/chat", qaRoutes); // Registering the chat route early
+app.use("/api/chat", qaRoutes); 
 
 app.get("/", (req: Request, res: Response) => {
     res.send("SourceSeek is Running");
 });
 
-// --- CLEANUP UTILITY ---
+
 const cleanupTempDir = async () => {
     const tempPath = path.join(__dirname, '../temp');
     try {
-        // Ensure the directory exists, then empty it
+       
         await fs.ensureDir(tempPath);
         await fs.emptyDir(tempPath);
         console.log(`[Server] Temp directory cleared: ${tempPath}`);
@@ -63,8 +62,6 @@ const cleanupTempDir = async () => {
     }
 };
 
-// --- SERVER START ---
-// Run cleanup before opening the port
 cleanupTempDir().then(() => {
     app.listen(port, () => {
         console.log(`[server]: Server is running at http://localhost:${port}`);

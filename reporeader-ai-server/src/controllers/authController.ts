@@ -28,7 +28,6 @@ export const register = async (req: Request, res: Response): Promise<any> => {
             { expiresIn: '1h' }
         );
 
-        // FIXED: Removed 'name: user.name'
         res.status(201).json({
             token,
             user: { id: user.id, email: user.email }
@@ -55,7 +54,6 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             { expiresIn: '1h' }
         );
 
-        // FIXED: Removed 'name: user.name'
         res.json({
             token,
             user: { id: user.id, email: user.email }
@@ -68,7 +66,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
 export const getMe = async (req: Request, res: Response): Promise<any> => {
     try {
-        // The authMiddleware attaches 'user' to the request
+
         const authReq = req as AuthRequest;
 
         if (!authReq.user || !authReq.user.userId) {
@@ -80,8 +78,7 @@ export const getMe = async (req: Request, res: Response): Promise<any> => {
             select: {
                 id: true,
                 email: true,
-                // Add name if your schema has it, otherwise omit or use email
-                // name: true, 
+
             }
         });
 
@@ -89,11 +86,10 @@ export const getMe = async (req: Request, res: Response): Promise<any> => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Return the profile in the format the frontend expects
         res.json({
             id: user.id,
             email: user.email,
-            name: user.email.split('@')[0] // Fallback name generation
+            name: user.email.split('@')[0]
         });
 
     } catch (error) {

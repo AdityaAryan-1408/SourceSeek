@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CinematicWrapper } from "@/components/CinematicWrapper"; // Import wrapper
+import { CinematicWrapper } from "@/components/CinematicWrapper";
 import {
     Card,
     CardContent,
@@ -13,17 +13,19 @@ import { Github, Mail } from "lucide-react";
 const AuthOptionsPage = () => {
     const navigate = useNavigate();
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555';
+
     const handleEmailLogin = () => {
         navigate("/auth/email");
     };
 
     const handleGitHubLogin = () => {
-        window.location.href = "http://localhost:5555/auth/github";
+        window.location.href = `${API_URL}/auth/github`;
     };
 
     return (
         <CinematicWrapper className="flex items-center justify-center pt-20 p-4">
-            {/* Updated Card Style to match Landing Page */}
+  
             <Card className="w-full max-w-md border-slate-700/50 bg-slate-900/50 backdrop-blur-md shadow-2xl">
                 <CardHeader className="text-center space-y-1">
                     <CardTitle className="text-2xl font-bold tracking-tight text-white">
@@ -35,7 +37,7 @@ const AuthOptionsPage = () => {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
 
-                    {/* PRIMARY ACTION: GitHub - Cyan Theme */}
+               
                     <Button
                         size="lg"
                         className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold shadow-[0_0_15px_rgba(6,182,212,0.4)] border-none transition-all"
@@ -57,7 +59,6 @@ const AuthOptionsPage = () => {
                         </div>
                     </div>
 
-                    {/* SECONDARY ACTION: Email */}
                     <Button
                         variant="outline"
                         size="lg"
