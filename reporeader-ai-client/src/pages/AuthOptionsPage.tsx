@@ -8,7 +8,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useAppStore } from "@/store/useAppStore";
 import { Github, Mail } from "lucide-react";
 
 const AuthOptionsPage = () => {

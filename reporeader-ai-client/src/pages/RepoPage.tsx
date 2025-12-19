@@ -10,7 +10,7 @@ import { RepoGraph } from "@/components/RepoGraph";
 import { CodeViewer } from "@/components/CodeViewer";
 import ChatPanel from "@/components/ChatPanel";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Code2, Home, ArrowLeft } from "lucide-react";
+import { MessageCircle, Code2, ArrowLeft } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 
 // ... (CollapsedPanelContent component stays the same) ...

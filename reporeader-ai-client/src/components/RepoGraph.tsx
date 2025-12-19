@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactFlow, {
     Controls,
@@ -98,7 +98,7 @@ const GraphView = () => {
         setNodes((nds) => nds.map((n) => ({ ...n, selected: n.id === selectedNodeId })));
     }, [selectedNodeId, setNodes]);
 
-    const handleNodeClick: NodeMouseHandler = (event, node) => {
+    const handleNodeClick: NodeMouseHandler = (_, node) => {
         setSelectedNodeId(node.id);
     };
 

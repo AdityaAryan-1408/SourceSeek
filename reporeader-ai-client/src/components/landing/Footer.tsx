@@ -10,10 +10,10 @@ export const Footer = () => {
 
         // 1. Set initial waiting state
         // We don't say "waking" immediately. We wait 2s to see if it's quick.
-        let isQuickResponse = true;
+
 
         const slowResponseTimer = setTimeout(() => {
-            isQuickResponse = false;
+
             setServerStatus('waking'); // After 2s, we tell user: "Okay, it's sleeping, waking up..."
         }, 2000);
 
