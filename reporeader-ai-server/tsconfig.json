@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2020", /* Use modern JS features */
+    "module": "commonjs", /* Standard Node.js module system */
+    "lib": [
+      "es2020"
+    ], /* Library files to include */
+    "outDir": "./dist", /* Where to put the converted JS files */
+    "rootDir": "./src", /* Where your TS source code lives */
+    "strict": true, /* Enable strict type checking (catches bugs!) */
+    "esModuleInterop": true, /* Allows easier imports of CommonJS modules */
+    "skipLibCheck": true, /* Skip type checking of declaration files */
+    "forceConsistentCasingInFileNames": true /* specific casing for filenames */
+  },
+  "include": [
+    "src/**/*"
+  ], /* Only compile files in src */
+  "exclude": [
+    "node_modules"
+  ] /* Don't compile libraries */
+}
