@@ -93,7 +93,26 @@ export const Footer = () => {
 
 
                 </div>
+                <div className="mt-12 py-8 border-t border-slate-800/50">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
 
+                        <div className="max-w-2xl text-center md:text-left space-y-2">
+                            <p>
+                                <span className="font-semibold text-slate-400">Project Disclaimer:</span> This is a portfolio project demonstrating RAG (Retrieval-Augmented Generation) & Graph Algorithms.
+                            </p>
+                            <p>
+                                Deployed on <span className="text-slate-400">Render Free Tier</span>.
+                                The server sleeps after 15 minutes of inactivity, which may cause a
+                                <span className="text-slate-400"> 1-2 minute delay </span>
+                                on the initial request. Data persistence is not guaranteed. Thank you for your understanding.
+                            </p>
+                        </div>
+
+                        <div className="text-slate-600">
+                            v1.0.0 • © 2025 RepoReader
+                        </div>
+                    </div>
+                </div>
                 <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-slate-600 text-sm">
                         © {new Date().getFullYear()} SourceSeek AI. Made with ❤️ by Aditya Aryan.

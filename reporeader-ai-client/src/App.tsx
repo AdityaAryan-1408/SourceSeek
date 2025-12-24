@@ -1,19 +1,18 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import RootLayout from "./pages/RootLayout"; // Import the new layout
+import RootLayout from "./pages/RootLayout";
 import IntroPage from "./pages/IntroPage";
 import AuthOptionsPage from "./pages/AuthOptionsPage";
 import EmailAuthPage from "./pages/EmailAuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import RepoPage from "./pages/RepoPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
+import { ServerAlertBanner } from "@/components/ServerAlertBanner";
 
 const router = createBrowserRouter([
   {
-   
     path: "/",
     element: <RootLayout />,
     children: [
-     
       {
         path: "/",
         element: <IntroPage />,
@@ -43,7 +42,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <ServerAlertBanner />
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;
