@@ -158,6 +158,7 @@ const DashboardPage = () => {
 
             {analyzingRepoId && showAnalysisModal && (
                 <AnalysisLoading
+                    repoId={analyzingRepoId}
                     onBackground={() => setShowAnalysisModal(false)}
                 />
             )}

@@ -8,6 +8,7 @@ import { chunkSourceCode } from "../services/chunkingService";
 import { generateEmbedding } from "../services/aiService";
 import prisma from "../lib/prisma";
 import { getRepoFileCount } from "../services/githubService";
+import { ingestionEvents } from "../lib/ingestionEmitter";
 
 interface AuthenticatedRequest extends Request {
     user?: {
@@ -18,6 +19,15 @@ interface AuthenticatedRequest extends Request {
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const emitUpdate = (repoId: string, message: string, progress: number, eta: string | null = null) => {
+    ingestionEvents.emit(`progress-${repoId}`, {
+        message,
+        progress,
+        eta,      
+        timestamp: new Date().toLocaleTimeString()
+    });
+};
 
 const generateEmbeddingWithRetry = async (text: string, retries = 3): Promise<number[] | null> => {
     for (let i = 0; i < retries; i++) {
@@ -117,16 +127,39 @@ const performIngestion = async (repoId: string, repoUrl: string, tempPath: strin
         });
 
         console.log(`[IngestWorker] Filtered down to ${filesToProcess.length} valid files.`);
+        emitUpdate(repoId, `Found ${filesToProcess.length} valid source files. Starting ingestion...`, 15);
 
         const BATCH_SIZE = 5;
+        const totalFiles = filesToProcess.length;
+        const startTime = Date.now();
+        let processedCount = 0;
 
-        for (let i = 0; i < filesToProcess.length; i += BATCH_SIZE) {
+        for (let i = 0; i < totalFiles; i += BATCH_SIZE) {
             const batch = filesToProcess.slice(i, i + BATCH_SIZE);
             console.log(`[IngestWorker] Processing batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} files)...`);
+            const elapsedSeconds = (Date.now() - startTime) / 1000;
+            const filesPerSecond = processedCount > 0 ? processedCount / elapsedSeconds : 0;
+            const remainingFiles = totalFiles - processedCount;
+            const etaSeconds = filesPerSecond > 0 ? Math.ceil(remainingFiles / filesPerSecond) : 0;
+            
+            const etaText = etaSeconds > 60 
+                ? `${Math.floor(etaSeconds / 60)}m ${etaSeconds % 60}s` 
+                : `${etaSeconds}s`;
+
+            const currentProgress = 15 + Math.floor((processedCount / totalFiles) * 80);
+
+            emitUpdate(
+                repoId, 
+                `Processing batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} files)...`, 
+                currentProgress, 
+                filesPerSecond > 0 ? etaText : "Calculating..."
+            );
 
             await Promise.all(
                 batch.map(file => processSingleFile(file, tempPath, repoId))
             );
+
+            processedCount += batch.length;
         }
 
         await prisma.repository.update({
@@ -135,6 +168,9 @@ const performIngestion = async (repoId: string, repoUrl: string, tempPath: strin
         });
 
         console.log(`[IngestWorker] Job Complete.`);
+        emitUpdate(repoId, `Ingestion complete! Finalizing...`, 100, "Done");
+        
+        await sleep(1000);
         await fs.remove(tempPath);
 
     } catch (error) {
@@ -143,7 +179,54 @@ const performIngestion = async (repoId: string, repoUrl: string, tempPath: strin
         await fs.remove(tempPath).catch(() => { });
     }
 };
+export const streamIngestionProgress = async (req: Request, res: Response) => {
+    const { repoId } = req.params;
 
+    console.log(`[SSE] Client connected for repo: ${repoId}`); // Debug log
+
+    // 1. Set Headers for SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders(); // Force headers to be sent immediately
+
+    // 2. Send an IMMEDIATE "Handshake" message
+    // This forces the frontend to switch from "Initializing..." to "Connected"
+    const handshake = {
+        message: "Connection established. Waiting for logs...",
+        progress: 0,
+        eta: "Calculating...",
+        timestamp: new Date().toLocaleTimeString()
+    };
+    res.write(`data: ${JSON.stringify(handshake)}\n\n`);
+
+    // 3. Define the event listener
+    const onProgress = (data: any) => {
+        // Log to server console to prove events are firing
+        console.log(`[SSE] Emitting to ${repoId}:`, data.message); 
+        
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+        
+        // Use res.flush() if available (some compression middleware needs this)
+        // @ts-ignore
+        if (res.flush) res.flush();
+
+        if (data.progress === 100 || data.message.includes("Error")) {
+            res.end();
+            ingestionEvents.off(`progress-${repoId}`, onProgress);
+        }
+    };
+
+    // 4. Subscribe
+    ingestionEvents.on(`progress-${repoId}`, onProgress);
+
+    // 5. Cleanup
+    req.on('close', () => {
+        console.log(`[SSE] Client disconnected: ${repoId}`);
+        ingestionEvents.off(`progress-${repoId}`, onProgress);
+    });
+};
 export const ingestRepo = async (req: Request, res: Response): Promise<any> => {
     const { repoUrl, repoName } = req.body;
     const authReq = req as AuthenticatedRequest;
