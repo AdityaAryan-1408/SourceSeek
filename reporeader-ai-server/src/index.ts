@@ -24,7 +24,8 @@ const port = process.env.PORT || 5555;
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://source-seek.vercel.app/" 
+        "https://source-seek.vercel.app",
+        "https://source-seek-6bmq.vercel.app"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
