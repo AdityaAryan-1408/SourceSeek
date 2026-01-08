@@ -20,19 +20,30 @@ const port = process.env.PORT || 5555;
 
 app.set("trust proxy", 1);
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://source-seek.vercel.app",
+    "https://source-seek-6bmq.vercel.app",
+    "https://source-seek-6bmq-cgb1oqlss-aditya-aryans-projects-c0c4577c.vercel.app/",
+    "https://source-seek-6bmq-git-main-aditya-aryans-projects-c0c4577c.vercel.app/",
+];
 
-const corsOptions: cors.CorsOptions = {
-    origin: [
-        "http://localhost:5173",
-        "https://source-seek.vercel.app",
-        "https://source-seek-6bmq.vercel.app"
-    ],
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log("Blocked by CORS:", origin); // Logs the failing origin to Render console
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-};
-
-app.use(cors(corsOptions));
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
+}));
 
 app.use(express.json());
 
