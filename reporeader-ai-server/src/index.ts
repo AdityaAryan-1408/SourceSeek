@@ -30,21 +30,28 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
+        // Allow requests with no origin (like mobile apps, curl, or server-to-server)
         if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log("Blocked by CORS:", origin); // Logs the failing origin to Render console
-            callback(new Error('Not allowed by CORS'));
+
+        // A. Check if it's in the fixed list (Localhost or Main Domain)
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
         }
+
+        // B. Dynamic Check for Vercel Preview URLs
+        // Allows any URL that ends with ".vercel.app" AND contains your project name
+        if (origin.endsWith('.vercel.app') && origin.includes('source-seek')) {
+            return callback(null, true);
+        }
+
+        // C. Block everything else
+        console.log("Blocked by CORS:", origin); // Check Render logs if you still have issues
+        return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
 }));
-app.options('*', cors());
 app.use(express.json());
 
 
